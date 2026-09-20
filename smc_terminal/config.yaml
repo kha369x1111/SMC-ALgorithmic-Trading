@@ -1,0 +1,104 @@
+# ==============================================================================
+# SMC / ICT ALGORITHMIC TRADING TERMINAL CONFIGURATION
+# Institutional Multi-Timeframe Algorithmic Trading Terminal
+# ==============================================================================
+
+# Core System Environment
+# Safety rule: Defaults to demo / paper mode. Live mode is strictly protected.
+environment: demo # options: demo, testnet, live
+trading_mode: paper # options: paper, execution
+market_type: spot # options: spot, futures
+exchange: binance # options: binance, bybit, okx
+
+# Tracked Asset Universe
+symbols:
+  - BTCUSDT
+  - ETHUSDT
+  - SOLUSDT
+
+# Multi-Timeframe Alignment
+# Higher Timeframe (HTF) = Context & Bias
+# Structure Timeframe = BOS / MSS / Liquidity Pools
+# Entry Timeframe = FVG / Order Block / Execution Refinement
+timeframes:
+  higher: 4h
+  structure: 15m
+  entry: 5m
+
+# Risk Management Engine (Final Execution Authority)
+risk:
+  risk_per_trade_percent: 0.25 # Maximum 1.0%
+  max_daily_loss_percent: 2.0  # Triggers 24h trading lock
+  max_open_positions: 2        # Hard cap on concurrent exposure
+  max_consecutive_losses: 3    # Triggers automatic circuit breaker halt
+  minimum_reward_risk: 2.0     # Minimum required R:R for signal approval
+  stop:
+    method: sweep              # options: sweep, order_block, atr_buffer
+    atr_buffer: 0.10
+    minimum_distance_percent: 0.15
+
+# Strategy Rules & Gating Thresholds
+strategy:
+  minimum_signal_score: 8      # Out of 10
+  require_liquidity_sweep: true
+  require_mss: true
+  require_fvg_or_order_block: true
+  use_premium_discount: true
+  allowed_sessions:
+    - london
+    - new_york
+
+# Market Structure Engine Configuration
+structure:
+  swing_method: fractal        # options: fractal, zigzag
+  swing_length: 3              # 3-bar or 5-bar fractal
+  bos:
+    require_close: true        # Candle close beyond swing level required
+    minimum_break_atr: 0.05
+  mss:
+    require_close: true
+    require_displacement: true
+
+# Liquidity Engine Configuration
+liquidity:
+  equal_tolerance_percent: 0.08 # % tolerance for EQH / EQL detection
+  sweep:
+    require_reclaim: true      # Price must sweep and reclaim within pool
+    require_structure_shift: true
+    max_confirmation_bars: 5
+
+# Fair Value Gap (FVG) Engine
+fvg:
+  enabled: true
+  min_atr_ratio: 0.15          # Filter micro-imbalances
+  entry_level: 0.50            # 50% Consequent Encroachment (CE)
+  invalidate_when_filled: true
+
+# Displacement Engine
+displacement:
+  min_body_atr_ratio: 1.0
+  require_structure_break: true
+  volume_confirmation: false
+
+# Execution Engine
+execution:
+  entry_method: fvg_50         # options: fvg_50, order_block, market_mss
+  order_type: limit            # options: limit, market
+  slippage_percent: 0.10
+  use_reduce_only: true
+  confirm_before_live_order: true
+
+# Safety, Latency & Circuit Breakers
+safety:
+  kill_switch: true
+  max_api_errors: 5
+  max_data_gap_seconds: 30
+  circuit_breaker_lock_minutes: 60
+
+# Desktop Application Preferences
+app:
+  start_in_demo: true
+  start_in_paper_mode: true
+  minimize_to_tray: false
+  language: ar
+  theme: dark_institutional

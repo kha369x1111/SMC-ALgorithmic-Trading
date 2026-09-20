@@ -1,0 +1,6 @@
+{
+  "name": "SMC Algorithmic Trading Terminal",
+  "description": "Institutional-grade SMC/ICT algorithmic trading terminal with multi-timeframe market structure, liquidity mapping, risk validation gating, and live execution pipelines.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
